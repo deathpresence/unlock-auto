@@ -8,6 +8,9 @@ import { ensureTenantDb } from "@/lib/tenant/registry";
 
 export const auth = betterAuth({
   database: drizzleAdapter(dbGlobal, { provider: "pg", schema }),
+  emailAndPassword: {
+    enabled: true,
+  },
   advanced: {
     database: {
       generateId: false,

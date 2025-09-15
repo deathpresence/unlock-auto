@@ -16,18 +16,18 @@ CREATE TABLE "account" (
 --> statement-breakpoint
 CREATE TABLE "invitation" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"organization_id" text NOT NULL,
+	"organization_id" uuid NOT NULL,
 	"email" text NOT NULL,
 	"role" text,
 	"status" text DEFAULT 'pending' NOT NULL,
 	"expires_at" timestamp NOT NULL,
-	"inviter_id" text NOT NULL
+	"inviter_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "member" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"organization_id" text NOT NULL,
-	"user_id" text NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
 	"role" text DEFAULT 'member' NOT NULL,
 	"created_at" timestamp NOT NULL
 );

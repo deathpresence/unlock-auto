@@ -1,5 +1,5 @@
 {
-  "id": "bc148260-c5ec-4e59-8a53-bd1157e06542",
+  "id": "6d2bd5c3-4af8-44cf-a7cb-cbada8418df1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -125,7 +125,7 @@
         },
         "organization_id": {
           "name": "organization_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -156,7 +156,7 @@
         },
         "inviter_id": {
           "name": "inviter_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
@@ -209,13 +209,13 @@
         },
         "organization_id": {
           "name": "organization_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "user_id": {
           "name": "user_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },

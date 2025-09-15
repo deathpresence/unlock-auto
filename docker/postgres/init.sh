@@ -3,7 +3,7 @@ set -euo pipefail
 
 psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" <<-SQL
 -- roles
-DO \$\$
+DO $$
 BEGIN
    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'admin_user') THEN
       CREATE ROLE admin_user WITH LOGIN CREATEDB PASSWORD '${POSTGRES_ADMIN_PASSWORD}';
@@ -15,17 +15,19 @@ BEGIN
       CREATE ROLE bouncer_user WITH LOGIN PASSWORD '${PGBOUNCER_AUTH_PASSWORD}';
    END IF;
 END
-\$\$;
+$$;
 
 -- global DB
-DO \$\$
+DO $$
 BEGIN
    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'app_global') THEN
       CREATE DATABASE app_global OWNER app_user;
    END IF;
 END
-\$\$;
+$$;
 
 -- basic privileges
 GRANT ALL PRIVILEGES ON DATABASE app_global TO admin_user;
 SQL
+
+
