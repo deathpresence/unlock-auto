@@ -32,14 +32,15 @@ export function RegisterForm({
       const formData = new FormData(event.currentTarget);
       const email = String(formData.get("email") || "").trim();
       const password = String(formData.get("password") || "");
-      const name = String(formData.get("name") || "").trim() || email.split("@")[0];
+      const name =
+        String(formData.get("name") || "").trim() || email.split("@")[0];
 
       const result = await signUp.email({ email, password, name });
       if (result.error) {
         setError(result.error.message || "Unable to register.");
         return;
       }
-      router.push("/login");
+      router.push("/");
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -60,7 +61,9 @@ export function RegisterForm({
           <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
               {error ? (
-                <p className="text-sm text-red-500" role="alert">{error}</p>
+                <p className="text-sm text-red-500" role="alert">
+                  {error}
+                </p>
               ) : null}
               <div className="grid gap-6">
                 <div className="grid gap-3">
@@ -86,9 +89,18 @@ export function RegisterForm({
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                   </div>
-                  <Input id="password" name="password" type="password" required />
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                  />
                 </div>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
                   Register
                 </Button>
               </div>

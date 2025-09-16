@@ -37,3 +37,4 @@ export async function getCurrentTenantDb(session: { activeOrganizationId?: strin
   
   return getTenantDbWithSchema(session.activeOrganizationId);
 }
+

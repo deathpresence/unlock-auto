@@ -40,3 +40,4 @@ async function migrateTenant(orgId, dbName) {
 // Get arguments from command line
 const [orgId, dbName] = process.argv.slice(2);
 migrateTenant(orgId, dbName);
+
