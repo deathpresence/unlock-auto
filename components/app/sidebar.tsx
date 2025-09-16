@@ -4,24 +4,33 @@ import Image from "next/image";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { OrganizationSwitcher } from "@/components/app/organization-switcher";
+import { User } from "better-auth";
+import { UserNav } from "./user-nav";
 
 const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
+  versions: ["Дмитровское шоссе", "МКАД 44 км", "Варшавское шоссе"],
 };
 
 export function AppSidebar({
   sidebar,
+  user,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { sidebar: React.ReactNode }) {
+}: React.ComponentProps<typeof Sidebar> & { sidebar: React.ReactNode } & {
+  user?: User;
+}) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <div className="flex items-center justify-between w-full">
-          <Image src="/logo.svg" width={115} height={28} alt="Unlock" />
+        <div className="flex items-center w-full p-2">
+          <div>
+            <Image src="/logo.svg" width={80} height={32} alt="Unlock" />{" "}
+            <div className="text-lg font-semibold">ИИ Ассистент</div>
+          </div>
         </div>
         <OrganizationSwitcher
           versions={data.versions}
@@ -33,6 +42,7 @@ export function AppSidebar({
         {sidebar}
       </SidebarContent>
       <SidebarRail />
+      <SidebarFooter>{user && <UserNav user={user} />}</SidebarFooter>
     </Sidebar>
   );
 }

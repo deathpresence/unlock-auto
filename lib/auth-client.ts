@@ -16,7 +16,6 @@ export const {
   organization,
 } = authClient;
 
-// Organization methods
 export const {
   create: createOrganization,
   list: listOrganizations,
