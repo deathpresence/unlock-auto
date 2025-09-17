@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app/sidebar";
+import { AppSidebar } from "@/components/app/sidebar/sidebar";
 import { AppHeader } from "@/components/app/header";
 import { requireSession } from "@/lib/session";
 import { cookies } from "next/headers";

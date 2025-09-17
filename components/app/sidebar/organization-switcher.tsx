@@ -15,6 +15,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
+import { setActiveOrganization, listOrganizations, getActiveMember } from "@/lib/auth-client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export function OrganizationSwitcher({
   versions,
@@ -23,7 +26,24 @@ export function OrganizationSwitcher({
   versions: string[];
   defaultVersion: string;
 }) {
-  const [selectedVersion, setSelectedVersion] = React.useState(defaultVersion);
+  const router = useRouter();
+  const [selectedOrgId, setSelectedOrgId] = React.useState<string | null>(null);
+  const [orgs, setOrgs] = React.useState<{ id: string; name?: string }[]>([]);
+
+  useEffect(() => {
+    // Load org list and active org from session cookie
+    (async () => {
+      const [orgList, activeMember] = await Promise.all([
+        listOrganizations(),
+        getActiveMember(),
+      ]);
+      setOrgs(orgList.data ?? []);
+      const active = activeMember.data;
+      if (active?.organizationId) {
+        setSelectedOrgId(active.organizationId);
+      }
+    })();
+  }, []);
 
   return (
     <SidebarMenu>
@@ -44,8 +64,10 @@ export function OrganizationSwitcher({
                 />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-medium">АвтоГЕРМЕС</span>
-                <span className="">{selectedVersion}</span>
+                <span className="font-medium">
+                  {orgs.find((o) => o.id === selectedOrgId)?.name ?? selectedOrgId ?? "Выберите организацию"}
+                </span>
+                <span className="">Организация</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -54,13 +76,18 @@ export function OrganizationSwitcher({
             className="w-(--radix-dropdown-menu-trigger-width)"
             align="start"
           >
-            {versions.map((version) => (
+            {orgs.map((org) => (
               <DropdownMenuItem
-                key={version}
-                onSelect={() => setSelectedVersion(version)}
+                key={org.id}
+                onSelect={async () => {
+                  setSelectedOrgId(org.id);
+                  await setActiveOrganization({ organizationId: org.id });
+                  // Navigate to chat so the Chat tab becomes selected
+                  router.replace("/chat");
+                }}
               >
-                {version}{" "}
-                {version === selectedVersion && <Check className="ml-auto" />}
+                {org.name ?? org.id}
+                {org.id === selectedOrgId && <Check className="ml-auto" />}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

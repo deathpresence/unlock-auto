@@ -18,3 +18,16 @@ export async function requireSession() {
   }
   return session;
 }
+
+export async function requireActiveOrgSession() {
+  const data = await getSessionOrNull();
+  if (!data) {
+    redirect("/login");
+  }
+  const { session } = data;
+  console.log(session)
+  if (!session.activeOrganizationId) {
+    redirect("/organizations/new");
+  }
+  return session;
+}

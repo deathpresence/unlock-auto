@@ -40,7 +40,7 @@ export function RegisterForm({
         setError(result.error.message || "Unable to register.");
         return;
       }
-      router.push("/");
+      router.push("/organizations/new");
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {

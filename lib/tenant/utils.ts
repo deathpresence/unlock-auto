@@ -1,4 +1,5 @@
 import { getTenantDb } from "./pg-runtime";
+
 import { getOrgDb } from "./registry";
 import * as tenantSchema from "@/db/tenant/schema";
 
@@ -8,12 +9,7 @@ import * as tenantSchema from "@/db/tenant/schema";
 export async function getTenantDbWithSchema(orgId: string) {
   const dbName = await getOrgDb(orgId);
   const db = getTenantDb(orgId, dbName);
-  
-  return {
-    db,
-    dbName,
-    schema: tenantSchema,
-  };
+  return { db, dbName, schema: tenantSchema };
 }
 
 /**
@@ -21,7 +17,10 @@ export async function getTenantDbWithSchema(orgId: string) {
  */
 export async function withTenantDb<T>(
   orgId: string,
-  callback: (db: ReturnType<typeof getTenantDb>, schema: typeof tenantSchema) => Promise<T>
+  callback: (
+    db: ReturnType<typeof getTenantDb>,
+    schema: typeof tenantSchema
+  ) => Promise<T>
 ): Promise<T> {
   const { db, schema } = await getTenantDbWithSchema(orgId);
   return callback(db, schema);
@@ -30,11 +29,12 @@ export async function withTenantDb<T>(
 /**
  * Get the current user's active organization database
  */
-export async function getCurrentTenantDb(session: { activeOrganizationId?: string | null }) {
+export async function getCurrentTenantDb(session: {
+  activeOrganizationId?: string | null;
+}) {
   if (!session.activeOrganizationId) {
     throw new Error("No active organization found in session");
   }
-  
+
   return getTenantDbWithSchema(session.activeOrganizationId);
 }
-

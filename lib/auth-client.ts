@@ -20,6 +20,7 @@ export const {
   create: createOrganization,
   list: listOrganizations,
   setActive: setActiveOrganization,
+  getActiveMember,
   inviteMember,
   acceptInvitation,
   removeMember,

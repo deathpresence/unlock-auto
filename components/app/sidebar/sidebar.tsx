@@ -8,7 +8,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { OrganizationSwitcher } from "@/components/app/organization-switcher";
+import { OrganizationSwitcher } from "@/components/app/sidebar/organization-switcher";
 import { User } from "better-auth";
 import { UserNav } from "./user-nav";
 

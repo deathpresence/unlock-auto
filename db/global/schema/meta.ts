@@ -9,9 +9,9 @@ import {
 export const orgDbMapping = pgTable(
   "org_db_mapping",
   {
-    orgId: uuid().notNull(),
-    dbName: text().notNull(),
-    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    orgId: uuid("org_id").notNull(),
+    dbName: text("db_name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [primaryKey({ columns: [t.orgId] })]
 );
