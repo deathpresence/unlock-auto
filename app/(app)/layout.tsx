@@ -3,7 +3,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/sidebar/sidebar";
 import { AppHeader } from "@/components/app/header";
 import { requireSession } from "@/lib/session";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -21,15 +22,34 @@ export default async function AppLayout({
   sidebar: React.ReactNode;
   children: React.ReactNode;
 }>) {
-  const [session, cookieStore] = await Promise.all([
-    requireSession(),
-    cookies(),
-  ]);
+  const { session, user } = await requireSession();
+  let activeOrg: any = null;
+  let organizations: any[] = [];
+  try {
+    const orgsResponse: any = await auth.api.listOrganizations({
+      headers: await headers(),
+    });
+    organizations = Array.isArray(orgsResponse)
+      ? orgsResponse
+      : orgsResponse?.data ?? [];
+    if (session.activeOrganizationId) {
+      activeOrg = organizations.find(
+        (o: any) => o.id === session.activeOrganizationId
+      ) ?? null;
+    }
+  } catch (_error) {
+    // ignore, render without organizations
+  }
 
   return (
     <>
       <SidebarProvider>
-        <AppSidebar sidebar={sidebar} user={session?.user} />
+        <AppSidebar
+          sidebar={sidebar}
+          user={user}
+          organization={activeOrg || null}
+          organizations={organizations}
+        />
         <SidebarInset>
           <AppHeader />
           {children}

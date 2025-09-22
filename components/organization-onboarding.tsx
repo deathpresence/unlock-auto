@@ -61,7 +61,7 @@ export function OrganizationOnboarding() {
       <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Create an organization</CardTitle>
+            <CardTitle>Создайте организацию</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             {error ? <div className="text-red-500 text-sm">{error}</div> : null}
@@ -76,14 +76,14 @@ export function OrganizationOnboarding() {
               onChange={(e) => setSlug(e.target.value)}
             />
             <Button onClick={handleCreate} disabled={!name || !slug || loading}>
-              Create
+              Создать
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Join with invitation</CardTitle>
+            <CardTitle>Приглашение в организацию</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <Input
@@ -95,7 +95,7 @@ export function OrganizationOnboarding() {
               onClick={handleAcceptInvite}
               disabled={!inviteId || loading}
             >
-              Accept invite
+              Принять приглашение
             </Button>
           </CardContent>
         </Card>

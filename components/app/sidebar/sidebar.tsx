@@ -19,9 +19,13 @@ const data = {
 export function AppSidebar({
   sidebar,
   user,
+  organization,
+  organizations,
   ...props
 }: React.ComponentProps<typeof Sidebar> & { sidebar: React.ReactNode } & {
   user?: User;
+  organization?: any;
+  organizations?: any[];
 }) {
   return (
     <Sidebar {...props}>
@@ -32,13 +36,9 @@ export function AppSidebar({
             <div className="text-lg font-semibold">ИИ Ассистент</div>
           </div>
         </div>
-        <OrganizationSwitcher
-          versions={data.versions}
-          defaultVersion={data.versions[0]}
-        />
+        <OrganizationSwitcher organizations={organizations || []} defaultOrganization={organization} />
       </SidebarHeader>
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
         {sidebar}
       </SidebarContent>
       <SidebarRail />

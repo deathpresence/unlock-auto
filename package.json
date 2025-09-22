@@ -21,8 +21,8 @@
     "db:migrate:tenants": "node scripts/migrate-tenants.js"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.30",
-    "@ai-sdk/react": "^2.0.44",
+    "@ai-sdk/openai": "^2.0.32",
+    "@ai-sdk/react": "^2.0.48",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -39,8 +39,8 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
-    "ai": "^5.0.44",
-    "better-auth": "^1.3.11",
+    "ai": "^5.0.48",
+    "better-auth": "^1.3.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -49,7 +49,7 @@
     "framer-motion": "^12.23.13",
     "lucide-react": "^0.544.0",
     "nanoid": "^5.1.5",
-    "next": "15.5.2",
+    "next": "15.5.3",
     "next-themes": "^0.4.6",
     "pg": "^8.16.3",
     "react": "19.1.1",
@@ -61,7 +61,7 @@
     "tailwind-merge": "^3.3.1",
     "tokenlens": "^1.3.0-canary.5",
     "use-stick-to-bottom": "^1.1.1",
-    "zod": "^4.1.8"
+    "zod": "^4.1.9"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

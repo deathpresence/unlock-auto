@@ -25,7 +25,6 @@ export async function requireActiveOrgSession() {
     redirect("/login");
   }
   const { session } = data;
-  console.log(session)
   if (!session.activeOrganizationId) {
     redirect("/organizations/new");
   }

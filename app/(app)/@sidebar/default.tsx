@@ -1,37 +1,34 @@
 "use client";
 
-import * as React from "react";
 import {
-  AudioWaveform,
   BookOpen,
-  Bot,
   Building2,
-  Command,
+  Car,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/app/sidebar/sidebar-nav-item";
 import { Sidebar, SidebarGroup, SidebarMenu } from "@/components/ui/sidebar";
+import { getActiveMember } from "@/lib/auth-client";
+import { ComponentProps, useEffect, useMemo, useState } from "react";
 
 const data = {
   navMain: [
     {
-      title: "Организации",
+      title: "Организация",
       url: "#",
       icon: Building2,
       isActive: true,
       items: [
         {
-          title: "Добавить организацию",
+          title: "Новая организация",
           url: "/organizations/new",
         },
         {
-          title: "Список организаций",
+          title: "Информация",
           url: "#",
         },
         {
@@ -43,7 +40,7 @@ const data = {
     {
       title: "Автосалоны",
       url: "#",
-      icon: Bot,
+      icon: Car,
       items: [
         {
           title: "Добавить автосалон",
@@ -51,21 +48,6 @@ const data = {
         },
         {
           title: "Список автосалонов",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Документация",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
           url: "#",
         },
       ],
@@ -93,6 +75,21 @@ const data = {
         },
       ],
     },
+    {
+      title: "Документация",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+      ],
+    },
   ],
   projects: [
     {
@@ -115,11 +112,46 @@ const data = {
 
 export default function DashboardSidebar({
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: ComponentProps<typeof Sidebar>) {
+  const [hasActiveOrg, setHasActiveOrg] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    getActiveMember().then((res) => {
+      if (!isMounted) return;
+      setHasActiveOrg(Boolean(res.data));
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const navItems = useMemo(() => {
+    return data.navMain
+      .filter((item) => {
+        if (item.title === "Автосалоны" && !hasActiveOrg) return false;
+        return true;
+      })
+      .map((item) => {
+        if (item.title === "Организация") {
+          const items = item.items?.filter((subItem) => {
+            if (!hasActiveOrg && subItem.title === "Карточка организации") {
+              return false;
+            }
+            if (hasActiveOrg && subItem.title === "Новая организация") {
+              return false;
+            }
+            return true;
+          });
+          return { ...item, items };
+        }
+        return item;
+      });
+  }, [hasActiveOrg]);
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {data.navMain.map((item, idx) => (
+        {navItems.map((item, idx) => (
           <NavMain item={item} key={idx} />
         ))}
       </SidebarMenu>
