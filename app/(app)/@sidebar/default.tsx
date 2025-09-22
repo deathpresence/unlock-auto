@@ -12,8 +12,8 @@ import {
 
 import { NavMain } from "@/components/app/sidebar/sidebar-nav-item";
 import { Sidebar, SidebarGroup, SidebarMenu } from "@/components/ui/sidebar";
-import { getActiveMember } from "@/lib/auth-client";
-import { ComponentProps, useEffect, useMemo, useState } from "react";
+import { ComponentProps, useMemo } from "react";
+import { useActiveOrg } from "@/components/app/active-org-provider";
 
 const data = {
   navMain: [
@@ -113,18 +113,7 @@ const data = {
 export default function DashboardSidebar({
   ...props
 }: ComponentProps<typeof Sidebar>) {
-  const [hasActiveOrg, setHasActiveOrg] = useState<boolean>(false);
-
-  useEffect(() => {
-    let isMounted = true;
-    getActiveMember().then((res) => {
-      if (!isMounted) return;
-      setHasActiveOrg(Boolean(res.data));
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const hasActiveOrg = useActiveOrg();
 
   const navItems = useMemo(() => {
     return data.navMain

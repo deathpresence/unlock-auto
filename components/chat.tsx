@@ -44,19 +44,74 @@ import {
   ReasoningTrigger,
 } from "@/components/ai/reasoning";
 import { Loader } from "@/components/ai/loader";
+import { DefaultChatTransport, UIMessage } from "ai";
+import { unstable_serialize, useSWRConfig } from "swr";
+import { generateUUID } from "@/lib/utils";
+import { getChatHistoryPaginationKey } from "@/app/(app)/@sidebar/(chat)/chat/page";
 
 const models = [
   {
     name: "GPT 4o",
-    value: "openai/gpt-4o",
+    value: "gpt-4o-mini",
   },
 ];
 
-export function Chat() {
+export function Chat({
+  id,
+  initialMessages,
+  initialChatModel,
+  initialLastContext,
+  initialVisibilityType,
+  isReadonly,
+}: {
+  id: string;
+  initialMessages?: UIMessage[];
+  initialChatModel?: string;
+  initialLastContext?: any;
+  initialVisibilityType?: "private" | "public";
+  isReadonly?: boolean;
+}) {
+  const { mutate } = useSWRConfig();
   const [input, setInput] = useState("");
-  const [model, setModel] = useState<string>(models[0].value);
+  const [model, setModel] = useState<string>(
+    typeof initialChatModel === "string" ? initialChatModel : models[0].value
+  );
   const [webSearch, setWebSearch] = useState(false);
-  const { messages, sendMessage, status, regenerate } = useChat();
+  const [usage, setUsage] = useState<any>(initialLastContext);
+  const { messages, sendMessage, status, regenerate, setMessages, stop } =
+    useChat<UIMessage>({
+      id,
+      messages: initialMessages ?? [],
+      experimental_throttle: 50,
+      generateId: generateUUID,
+      transport: new DefaultChatTransport({
+        api: "/api/chat",
+        prepareSendMessagesRequest(request) {
+          return {
+            body: {
+              chatId: request.id,
+              message: request.messages.at(-1),
+              model: model,
+              webSearch: webSearch,
+              selectedVisibilityType: initialVisibilityType ?? "private",
+              ...request.body,
+            },
+          };
+        },
+      }),
+      onData: (dataPart: any) => {
+        if (dataPart?.type === "data-usage") {
+          setUsage(dataPart.data);
+        }
+      },
+      onFinish: () => {
+        mutate(unstable_serialize(getChatHistoryPaginationKey));
+      },
+      onError: (error: any) => {
+        // Surface error to console; UI toast system can be wired later
+        console.error(error);
+      },
+    });
 
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
@@ -66,18 +121,15 @@ export function Chat() {
       return;
     }
 
-    sendMessage(
-      {
-        text: message.text || "Sent with attachments",
-        files: message.files,
-      },
-      {
-        body: {
-          model: model,
-          webSearch: webSearch,
-        },
-      }
-    );
+    const parts: any[] = [];
+    if (message.text) {
+      parts.push({ type: "text", text: message.text });
+    }
+
+    sendMessage({
+      role: "user" as const,
+      parts,
+    });
     setInput("");
   };
 

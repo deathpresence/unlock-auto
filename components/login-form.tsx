@@ -38,7 +38,7 @@ export function LoginForm({
         setError(result.error.message || "Invalid email or password.");
         return;
       }
-      router.push("/");
+      router.push("/after-login");
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -64,6 +64,7 @@ export function LoginForm({
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     placeholder="m@example.com"
                     required
@@ -79,7 +80,7 @@ export function LoginForm({
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input id="password" name="password" type="password" required />
                 </div>
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                   Login

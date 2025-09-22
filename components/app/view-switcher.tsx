@@ -4,18 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MessageSquare, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getActiveMember } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
+import { useActiveOrg } from "@/components/app/active-org-provider";
 
 export function ViewSwitcher() {
   const pathname = usePathname();
-  const [hasActiveOrg, setHasActiveOrg] = useState<boolean>(true);
+  const hasActiveOrg = useActiveOrg();
 
-  useEffect(() => {
-    getActiveMember().then((res) => {
-      setHasActiveOrg(Boolean(res.data));
-    });
-  }, [pathname]);
+  useEffect(() => {}, [pathname]);
 
   const isChat = pathname?.startsWith("/chat");
 

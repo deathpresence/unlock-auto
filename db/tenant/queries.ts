@@ -1,6 +1,17 @@
 import "server-only";
 
-import { and, asc, count, desc, eq, gt, gte, inArray, lt, type SQL } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gt,
+  gte,
+  inArray,
+  lt,
+  type SQL,
+} from "drizzle-orm";
 import { ChatSDKError } from "@/lib/errors";
 import type { AppUsage } from "@/lib/usage";
 import type { Suggestion } from "./schema/chat";
@@ -14,9 +25,14 @@ async function getCtx() {
   if (!data) {
     throw new ChatSDKError("bad_request:auth", "Not authenticated");
   }
-  const { session } = data as { session: { activeOrganizationId?: string | null; userId?: string } };
+  const { session } = data as {
+    session: { activeOrganizationId?: string | null; userId?: string };
+  };
   if (!session?.activeOrganizationId) {
-    throw new ChatSDKError("bad_request:auth", "No active organization selected");
+    throw new ChatSDKError(
+      "bad_request:auth",
+      "No active organization selected"
+    );
   }
   const { db, schema } = await getCurrentTenantDb(session);
   return { db, schema, session };
@@ -43,6 +59,7 @@ export async function saveChat({
       visibility,
     });
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError("bad_request:database", "Failed to save chat");
   }
 }
@@ -50,16 +67,19 @@ export async function saveChat({
 export async function deleteChatById({ id }: { id: string }) {
   try {
     const { db, schema } = await getCtx();
-    await db.delete(schema.vote).where(eq(schema.vote.chatId, id));
-    await db.delete(schema.message).where(eq(schema.message.chatId, id));
-    await db.delete(schema.stream).where(eq(schema.stream.chatId, id));
-
-    const [chatsDeleted] = await db
-      .delete(schema.chat)
-      .where(eq(schema.chat.id, id))
-      .returning();
-    return chatsDeleted;
+    const deleted = await db.transaction(async (tx) => {
+      await tx.delete(schema.vote).where(eq(schema.vote.chatId, id));
+      await tx.delete(schema.message).where(eq(schema.message.chatId, id));
+      await tx.delete(schema.stream).where(eq(schema.stream.chatId, id));
+      const [chatRow] = await tx
+        .delete(schema.chat)
+        .where(eq(schema.chat.id, id))
+        .returning();
+      return chatRow;
+    });
+    return deleted;
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to delete chat by id"
@@ -110,7 +130,9 @@ export async function getChatsByUserId({
         );
       }
 
-      filteredChats = await query(gt(schema.chat.createdAt, selectedChat.createdAt));
+      filteredChats = await query(
+        gt(schema.chat.createdAt, selectedChat.createdAt)
+      );
     } else if (endingBefore) {
       const [selectedChat] = await db
         .select()
@@ -125,7 +147,9 @@ export async function getChatsByUserId({
         );
       }
 
-      filteredChats = await query(lt(schema.chat.createdAt, selectedChat.createdAt));
+      filteredChats = await query(
+        lt(schema.chat.createdAt, selectedChat.createdAt)
+      );
     } else {
       filteredChats = await query();
     }

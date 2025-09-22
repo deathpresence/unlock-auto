@@ -1,13 +1,18 @@
 import { requireActiveOrgSession } from "@/lib/session";
-import { redirect } from "next/navigation";
+import { randomUUID } from "crypto";
 import { Chat } from "@/components/chat";
 
 export default async function Page() {
-  const session = await requireActiveOrgSession();
+  await requireActiveOrgSession();
+  const id = randomUUID();
 
-  if (!session) {
-    redirect("/login");
-  }
-
-  return <Chat />;
+  return (
+    <Chat
+      id={id}
+      initialMessages={[]}
+      initialChatModel={"gpt-4o-mini"}
+      initialVisibilityType={"private"}
+      isReadonly={false}
+    />
+  );
 }

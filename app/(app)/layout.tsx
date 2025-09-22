@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/app/header";
 import { requireSession } from "@/lib/session";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { ActiveOrgProvider } from "@/components/app/active-org-provider";
 
 export const runtime = "nodejs";
 
@@ -33,9 +34,9 @@ export default async function AppLayout({
       ? orgsResponse
       : orgsResponse?.data ?? [];
     if (session.activeOrganizationId) {
-      activeOrg = organizations.find(
-        (o: any) => o.id === session.activeOrganizationId
-      ) ?? null;
+      activeOrg =
+        organizations.find((o: any) => o.id === session.activeOrganizationId) ??
+        null;
     }
   } catch (_error) {
     // ignore, render without organizations
@@ -44,16 +45,18 @@ export default async function AppLayout({
   return (
     <>
       <SidebarProvider>
-        <AppSidebar
-          sidebar={sidebar}
-          user={user}
-          organization={activeOrg || null}
-          organizations={organizations}
-        />
-        <SidebarInset>
-          <AppHeader />
-          {children}
-        </SidebarInset>
+        <ActiveOrgProvider value={Boolean(session.activeOrganizationId)}>
+          <AppSidebar
+            sidebar={sidebar}
+            user={user}
+            organization={activeOrg || null}
+            organizations={organizations}
+          />
+          <SidebarInset>
+            <AppHeader />
+            {children}
+          </SidebarInset>
+        </ActiveOrgProvider>
       </SidebarProvider>
     </>
   );

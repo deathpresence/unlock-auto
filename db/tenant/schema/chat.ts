@@ -35,7 +35,7 @@ export const message = pgTable("message", {
   role: varchar("role").notNull(),
   parts: json("parts").notNull(),
   attachments: json("attachments").notNull(),
-  createdAt: timestamp("created_at").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
 });
 
 export type DBMessage = InferSelectModel<typeof message>;
@@ -110,8 +110,8 @@ export const stream = pgTable(
   "stream",
   {
     id: uuid().notNull().defaultRandom(),
-    chatId: uuid().notNull(),
-    createdAt: timestamp().notNull(),
+    chatId: uuid("chat_id").notNull(),
+    createdAt: timestamp("created_at").notNull(),
   },
   (table) => [
     {

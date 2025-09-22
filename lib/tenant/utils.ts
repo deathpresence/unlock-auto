@@ -1,13 +1,14 @@
 import { getTenantDb } from "./pg-runtime";
 
-import { getOrgDb } from "./registry";
+import { ensureMappingExists } from "./registry";
 import * as tenantSchema from "@/db/tenant/schema";
 
 /**
  * Get a tenant database connection with schema for an organization
  */
 export async function getTenantDbWithSchema(orgId: string) {
-  const dbName = await getOrgDb(orgId);
+  const dbName = await ensureMappingExists(orgId);
+
   const db = getTenantDb(orgId, dbName);
   return { db, dbName, schema: tenantSchema };
 }
