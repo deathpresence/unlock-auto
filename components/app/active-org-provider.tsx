@@ -1,23 +1,23 @@
 "use client";
 
-import * as React from "react";
+import { createContext, type ReactNode, useContext } from "react";
 
-const ActiveOrgContext = React.createContext<boolean>(false);
+const ActiveOrgContext = createContext<boolean>(false);
 
 export function ActiveOrgProvider({
   value,
   children,
 }: {
   value: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <ActiveOrgContext.Provider value={value}>{children}</ActiveOrgContext.Provider>
+    <ActiveOrgContext.Provider value={value}>
+      {children}
+    </ActiveOrgContext.Provider>
   );
 }
 
 export function useActiveOrg(): boolean {
-  return React.useContext(ActiveOrgContext);
+  return useContext(ActiveOrgContext);
 }
-
-

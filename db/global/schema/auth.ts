@@ -1,13 +1,12 @@
+import type { InferSelectModel } from "drizzle-orm";
 import {
+  boolean,
   pgTable,
   text,
   timestamp,
   uuid,
-  boolean,
   varchar,
 } from "drizzle-orm/pg-core";
-
-import { InferSelectModel } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: uuid().primaryKey().notNull().defaultRandom(),

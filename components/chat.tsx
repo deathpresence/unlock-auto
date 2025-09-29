@@ -1,10 +1,18 @@
 "use client";
 
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+import { CopyIcon, GlobeIcon, RefreshCcwIcon } from "lucide-react";
+import { Fragment, useState } from "react";
+import { unstable_serialize, useSWRConfig } from "swr";
+import { getChatHistoryPaginationKey } from "@/app/(app)/@sidebar/(chat)/chat/page";
+import { Action, Actions } from "@/components/ai/actions";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai/conversation";
+import { Loader } from "@/components/ai/loader";
 import { Message, MessageContent } from "@/components/ai/message";
 import {
   PromptInput,
@@ -27,27 +35,19 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from "@/components/ai/prompt-input";
-import { Actions, Action } from "@/components/ai/actions";
-import { Fragment, useState } from "react";
-import { useChat } from "@ai-sdk/react";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai/reasoning";
 import { Response } from "@/components/ai/response";
-import { CopyIcon, GlobeIcon, RefreshCcwIcon } from "lucide-react";
 import {
   Source,
   Sources,
   SourcesContent,
   SourcesTrigger,
 } from "@/components/ai/sources";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@/components/ai/reasoning";
-import { Loader } from "@/components/ai/loader";
-import { DefaultChatTransport, UIMessage } from "ai";
-import { unstable_serialize, useSWRConfig } from "swr";
 import { generateUUID } from "@/lib/utils";
-import { getChatHistoryPaginationKey } from "@/app/(app)/@sidebar/(chat)/chat/page";
 
 const models = [
   {
@@ -91,8 +91,8 @@ export function Chat({
             body: {
               chatId: request.id,
               message: request.messages.at(-1),
-              model: model,
-              webSearch: webSearch,
+              model,
+              webSearch,
               selectedVisibilityType: initialVisibilityType ?? "private",
               ...request.body,
             },
@@ -134,8 +134,8 @@ export function Chat({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 relative size-full">
-      <div className="flex flex-col h-full">
+    <div className="relative mx-auto size-full max-w-4xl p-6">
+      <div className="flex h-full flex-col">
         <Conversation className="h-full">
           <ConversationContent>
             {messages.map((message) => (
@@ -156,8 +156,8 @@ export function Chat({
                         .map((part, i) => (
                           <SourcesContent key={`${message.id}-${i}`}>
                             <Source
-                              key={`${message.id}-${i}`}
                               href={part.url}
+                              key={`${message.id}-${i}`}
                               title={part.url}
                             />
                           </SourcesContent>
@@ -178,16 +178,16 @@ export function Chat({
                             i === messages.length - 1 && (
                               <Actions className="mt-2">
                                 <Action
-                                  onClick={() => regenerate()}
                                   label="Retry"
+                                  onClick={() => regenerate()}
                                 >
                                   <RefreshCcwIcon className="size-3" />
                                 </Action>
                                 <Action
+                                  label="Copy"
                                   onClick={() =>
                                     navigator.clipboard.writeText(part.text)
                                   }
-                                  label="Copy"
                                 >
                                   <CopyIcon className="size-3" />
                                 </Action>
@@ -198,13 +198,13 @@ export function Chat({
                     case "reasoning":
                       return (
                         <Reasoning
-                          key={`${message.id}-${i}`}
                           className="w-full"
                           isStreaming={
                             status === "streaming" &&
                             i === message.parts.length - 1 &&
                             message.id === messages.at(-1)?.id
                           }
+                          key={`${message.id}-${i}`}
                         >
                           <ReasoningTrigger />
                           <ReasoningContent>{part.text}</ReasoningContent>
@@ -222,10 +222,10 @@ export function Chat({
         </Conversation>
 
         <PromptInput
-          onSubmit={handleSubmit}
           className="mt-4"
           globalDrop
           multiple
+          onSubmit={handleSubmit}
         >
           <PromptInputBody>
             <PromptInputAttachments>
@@ -245,8 +245,8 @@ export function Chat({
                 </PromptInputActionMenuContent>
               </PromptInputActionMenu>
               <PromptInputButton
-                variant={webSearch ? "default" : "ghost"}
                 onClick={() => setWebSearch(!webSearch)}
+                variant={webSearch ? "default" : "ghost"}
               >
                 <GlobeIcon size={16} />
                 <span>Search</span>
@@ -272,7 +272,7 @@ export function Chat({
                 </PromptInputModelSelectContent>
               </PromptInputModelSelect>
             </PromptInputTools>
-            <PromptInputSubmit disabled={!input && !status} status={status} />
+            <PromptInputSubmit disabled={!(input || status)} status={status} />
           </PromptInputToolbar>
         </PromptInput>
       </div>

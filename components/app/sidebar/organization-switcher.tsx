@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
-import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
-
+import { ChevronsUpDown, PlusCircle } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -14,9 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 export function OrganizationSwitcher({
   organizations,
@@ -26,10 +23,10 @@ export function OrganizationSwitcher({
   defaultOrganization: { id: string; name?: string } | null;
 }) {
   const router = useRouter();
-  const [selectedOrgId, setSelectedOrgId] = React.useState<string | null>(
+  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(
     defaultOrganization?.id ?? null
   );
-  const [orgs, setOrgs] = React.useState<{ id: string; name?: string }[]>(
+  const [orgs, setOrgs] = useState<{ id: string; name?: string }[]>(
     organizations || []
   );
 
@@ -48,15 +45,15 @@ export function OrganizationSwitcher({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
+                className="border data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border"
               >
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Image
-                    src="/autogermes.png"
                     alt="client"
-                    width={32}
                     height={32}
+                    src="/autogermes.png"
+                    width={32}
                   />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
@@ -71,8 +68,8 @@ export function OrganizationSwitcher({
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-(--radix-dropdown-menu-trigger-width)"
               align="start"
+              className="w-(--radix-dropdown-menu-trigger-width)"
             >
               {/* {orgs.map((org) => (
                 <DropdownMenuItem
@@ -92,16 +89,16 @@ export function OrganizationSwitcher({
           </DropdownMenu>
         ) : (
           <SidebarMenuButton
-            size="lg"
             className="cursor-pointer border"
             onClick={() => router.push("/organizations/new")}
+            size="lg"
           >
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
               <PlusCircle size={16} />
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
               <span className="font-medium">Создайте организацию</span>
-            </div>
+            </div>{" "}
           </SidebarMenuButton>
         )}
       </SidebarMenuItem>

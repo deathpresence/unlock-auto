@@ -1,6 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,10 +13,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 export function RegisterForm({
   className,
@@ -61,7 +61,7 @@ export function RegisterForm({
           <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
               {error ? (
-                <p className="text-sm text-red-500" role="alert">
+                <p className="text-red-500 text-sm" role="alert">
                   {error}
                 </p>
               ) : null}
@@ -71,8 +71,8 @@ export function RegisterForm({
                   <Input
                     id="name"
                     name="name"
-                    type="text"
                     placeholder="Your name"
+                    type="text"
                   />
                 </div>
                 <div className="grid gap-3">
@@ -80,9 +80,9 @@ export function RegisterForm({
                   <Input
                     id="email"
                     name="email"
-                    type="email"
                     placeholder="m@example.com"
                     required
+                    type="email"
                   />
                 </div>
                 <div className="grid gap-3">
@@ -92,21 +92,21 @@ export function RegisterForm({
                   <Input
                     id="password"
                     name="password"
-                    type="password"
                     required
+                    type="password"
                   />
                 </div>
                 <Button
-                  type="submit"
                   className="w-full"
                   disabled={isSubmitting}
+                  type="submit"
                 >
                   Register
                 </Button>
               </div>
               <div className="text-center text-sm">
                 Already have an account?{" "}
-                <Link href="/login" className="underline underline-offset-4">
+                <Link className="underline underline-offset-4" href="/login">
                   Login
                 </Link>
               </div>

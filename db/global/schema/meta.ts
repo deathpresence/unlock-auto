@@ -1,8 +1,8 @@
 import {
   pgTable,
+  primaryKey,
   text,
   timestamp,
-  primaryKey,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -11,7 +11,9 @@ export const orgDbMapping = pgTable(
   {
     orgId: uuid("org_id").notNull(),
     dbName: text("db_name").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [primaryKey({ columns: [t.orgId] })]
 );

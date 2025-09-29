@@ -7,10 +7,12 @@ export default async function AfterLoginPage() {
   const { session } = await requireSession();
   try {
     const hdrs = await headers();
-    const orgsResponse: any = await auth.api.listOrganizations({ headers: hdrs });
+    const orgsResponse: any = await auth.api.listOrganizations({
+      headers: hdrs,
+    });
     const organizations = Array.isArray(orgsResponse)
       ? orgsResponse
-      : orgsResponse?.data ?? [];
+      : (orgsResponse?.data ?? []);
     if (!session.activeOrganizationId && organizations[0]?.id) {
       try {
         await auth.api.setActiveOrganization({
@@ -23,5 +25,3 @@ export default async function AfterLoginPage() {
 
   redirect("/");
 }
-
-

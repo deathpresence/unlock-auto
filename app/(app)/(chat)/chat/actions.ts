@@ -1,5 +1,6 @@
 "use server";
 
+import { openai } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { cookies } from "next/headers";
 import {
@@ -7,7 +8,6 @@ import {
   getMessageById,
   updateChatVisiblityById,
 } from "@/db/tenant/queries";
-import { openai } from "@ai-sdk/openai";
 // import type { VisibilityType } from "@/components/visibility-selector";
 
 export async function saveChatModelAsCookie(model: string) {

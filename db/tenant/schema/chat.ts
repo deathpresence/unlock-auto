@@ -1,15 +1,15 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
-  pgTable,
-  varchar,
-  timestamp,
+  boolean,
+  foreignKey,
   json,
   jsonb,
-  uuid,
-  text,
+  pgTable,
   primaryKey,
-  foreignKey,
-  boolean,
+  text,
+  timestamp,
+  uuid,
+  varchar,
 } from "drizzle-orm/pg-core";
 import type { AppUsage } from "@/lib/usage";
 
@@ -73,9 +73,11 @@ export const document = pgTable(
     // Author's global user id, no cross-database FK
     userId: uuid("user_id").notNull(),
   },
-  (table) => [{
-    pk: primaryKey({ columns: [table.id, table.createdAt] }),
-  }]
+  (table) => [
+    {
+      pk: primaryKey({ columns: [table.id, table.createdAt] }),
+    },
+  ]
 );
 
 export type Document = InferSelectModel<typeof document>;

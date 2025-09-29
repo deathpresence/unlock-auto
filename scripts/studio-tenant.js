@@ -15,7 +15,7 @@ if (!dbName) {
 
 const adminUrl = process.env.POSTGRES_ADMIN_URL;
 const appPass = process.env.POSTGRES_APP_PASSWORD;
-if (!adminUrl || !appPass) {
+if (!(adminUrl && appPass)) {
   console.error("POSTGRES_ADMIN_URL and POSTGRES_APP_PASSWORD must be set");
   process.exit(1);
 }

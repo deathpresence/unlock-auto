@@ -1,6 +1,10 @@
+import {
+  getChatById,
+  getVotesByChatId,
+  voteMessage,
+} from "@/db/tenant/queries";
 import { ChatSDKError } from "@/lib/errors";
 import { requireActiveOrgSession } from "@/lib/session";
-import { getChatById, getVotesByChatId, voteMessage } from "@/db/tenant/queries";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -33,7 +37,7 @@ export async function PATCH(request: Request) {
   const messageId = body?.messageId as string | undefined;
   const type = body?.type as ("up" | "down") | undefined;
 
-  if (!chatId || !messageId || !type) {
+  if (!(chatId && messageId && type)) {
     return new ChatSDKError(
       "bad_request:api",
       "Parameters chatId, messageId, and type are required."
@@ -53,5 +57,3 @@ export async function PATCH(request: Request) {
   await voteMessage({ chatId, messageId, type });
   return new Response("Message voted", { status: 200 });
 }
-
-

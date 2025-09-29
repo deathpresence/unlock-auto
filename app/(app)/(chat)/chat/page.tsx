@@ -1,6 +1,6 @@
-import { requireActiveOrgSession } from "@/lib/session";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { Chat } from "@/components/chat";
+import { requireActiveOrgSession } from "@/lib/session";
 
 export default async function Page() {
   await requireActiveOrgSession();
@@ -9,8 +9,8 @@ export default async function Page() {
   return (
     <Chat
       id={id}
-      initialMessages={[]}
       initialChatModel={"gpt-4o-mini"}
+      initialMessages={[]}
       initialVisibilityType={"private"}
       isReadonly={false}
     />

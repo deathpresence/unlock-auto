@@ -1,9 +1,9 @@
-import clsx, { ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { ChatSDKError, ErrorCode } from "./errors";
-import { DBMessage } from "@/db/tenant/schema";
-import { UIMessage, UIMessagePart } from "ai";
+import type { UIMessage, UIMessagePart } from "ai";
+import clsx, { type ClassValue } from "clsx";
 import { formatISO } from "date-fns";
+import { twMerge } from "tailwind-merge";
+import type { DBMessage } from "@/db/tenant/schema";
+import { ChatSDKError, type ErrorCode } from "./errors";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

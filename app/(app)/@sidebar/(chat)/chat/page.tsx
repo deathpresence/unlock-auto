@@ -1,10 +1,14 @@
 "use client";
 
+import type { User } from "better-auth";
 import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
+import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import useSwrInfinite from "swr/infinite";
+import { ChatItem } from "@/components/app/sidebar/sidebar-chat-item";
+import { LoaderIcon } from "@/components/icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,10 +27,6 @@ import {
 } from "@/components/ui/sidebar";
 import type { Chat } from "@/db/tenant/schema";
 import { fetcher } from "@/lib/utils";
-import { ChatItem } from "@/components/app/sidebar/sidebar-chat-item";
-import useSWRInfinite from "swr/infinite";
-import { LoaderIcon } from "@/components/icons";
-import { User } from "better-auth";
 
 type GroupedChats = {
   today: Chat[];
@@ -36,10 +36,10 @@ type GroupedChats = {
   older: Chat[];
 };
 
-export interface ChatHistory {
-  chats: Array<Chat>;
+export type ChatHistory = {
+  chats: Chat[];
   hasMore: boolean;
-}
+};
 
 const PAGE_SIZE = 20;
 
@@ -84,11 +84,15 @@ export function getChatHistoryPaginationKey(
     return null;
   }
 
-  if (pageIndex === 0) return `/api/history?limit=${PAGE_SIZE}`;
+  if (pageIndex === 0) {
+    return `/api/history?limit=${PAGE_SIZE}`;
+  }
 
   const firstChatFromPage = previousPageData.chats.at(-1);
 
-  if (!firstChatFromPage) return null;
+  if (!firstChatFromPage) {
+    return null;
+  }
 
   return `/api/history?ending_before=${firstChatFromPage.id}&limit=${PAGE_SIZE}`;
 }
@@ -103,7 +107,7 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
     isValidating,
     isLoading,
     mutate,
-  } = useSWRInfinite<ChatHistory>(getChatHistoryPaginationKey, fetcher, {
+  } = useSwrInfinite<ChatHistory>(getChatHistoryPaginationKey, fetcher, {
     fallbackData: [],
   });
 
@@ -151,18 +155,18 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
   if (isLoading) {
     return (
       <SidebarGroup>
-        <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+        <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
           Сегодня
         </div>
         <SidebarGroupContent>
           <div className="flex flex-col">
             {[44, 32, 28, 64, 52].map((item) => (
               <div
+                className="flex h-8 items-center gap-2 rounded-md px-2"
                 key={item}
-                className="rounded-md h-8 flex gap-2 px-2 items-center"
               >
                 <div
-                  className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10"
+                  className="h-4 max-w-[--skeleton-width] flex-1 rounded-md bg-sidebar-accent-foreground/10"
                   style={
                     {
                       "--skeleton-width": `${item}%`,
@@ -181,7 +185,7 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
     return (
       <SidebarGroup>
         <SidebarGroupContent>
-          <div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
+          <div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
             Диалоги будут здесь
           </div>
         </SidebarGroupContent>
@@ -206,14 +210,14 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
                   <div className="flex flex-col gap-6">
                     {groupedChats.today.length > 0 && (
                       <div>
-                        <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                        <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
                           Сегодня
                         </div>
                         {groupedChats.today.map((chat) => (
                           <ChatItem
-                            key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
+                            key={chat.id}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -226,14 +230,14 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
 
                     {groupedChats.yesterday.length > 0 && (
                       <div>
-                        <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                        <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
                           Вчера
                         </div>
                         {groupedChats.yesterday.map((chat) => (
                           <ChatItem
-                            key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
+                            key={chat.id}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -246,14 +250,14 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
 
                     {groupedChats.lastWeek.length > 0 && (
                       <div>
-                        <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                        <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
                           На этой неделе
                         </div>
                         {groupedChats.lastWeek.map((chat) => (
                           <ChatItem
-                            key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
+                            key={chat.id}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -266,14 +270,14 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
 
                     {groupedChats.lastMonth.length > 0 && (
                       <div>
-                        <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                        <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
                           В этом месяце
                         </div>
                         {groupedChats.lastMonth.map((chat) => (
                           <ChatItem
-                            key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
+                            key={chat.id}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -286,14 +290,14 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
 
                     {groupedChats.older.length > 0 && (
                       <div>
-                        <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                        <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
                           Ранее
                         </div>
                         {groupedChats.older.map((chat) => (
                           <ChatItem
-                            key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
+                            key={chat.id}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -310,18 +314,18 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
 
           <motion.div
             onViewportEnter={() => {
-              if (!isValidating && !hasReachedEnd) {
+              if (!(isValidating || hasReachedEnd)) {
                 setSize((size) => size + 1);
               }
             }}
           />
 
           {hasReachedEnd ? (
-            <div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2 mt-8">
+            <div className="mt-8 flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
               Вы достигли конца
             </div>
           ) : (
-            <div className="p-2 text-zinc-500 dark:text-zinc-400 flex flex-row gap-2 items-center mt-8">
+            <div className="mt-8 flex flex-row items-center gap-2 p-2 text-zinc-500 dark:text-zinc-400">
               <div className="animate-spin">
                 <LoaderIcon />
               </div>
@@ -331,7 +335,7 @@ export default function ChatSidebar({ user }: { user: User | undefined }) {
         </SidebarGroupContent>
       </SidebarGroup>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog onOpenChange={setShowDeleteDialog} open={showDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Вы уверены?</AlertDialogTitle>

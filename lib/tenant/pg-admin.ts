@@ -1,8 +1,8 @@
 "server only";
 
-import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { Pool } from "pg";
 import { setOrgDb } from "./registry";
 
 const admin = new Pool({ connectionString: process.env.POSTGRES_ADMIN_URL! });
@@ -53,18 +53,18 @@ export async function createTenantDatabase(orgId: string, slug?: string) {
 
     // Ensure app_user can use the public schema for runtime operations
     try {
-      await pool.query(`GRANT USAGE, CREATE ON SCHEMA public TO app_user;`);
+      await pool.query("GRANT USAGE, CREATE ON SCHEMA public TO app_user;");
       await pool.query(
-        `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;`
+        "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;"
       );
       await pool.query(
-        `GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO app_user;`
+        "GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO app_user;"
       );
       // Drizzle migration metadata schema
-      await pool.query(`CREATE SCHEMA IF NOT EXISTS drizzle;`);
-      await pool.query(`GRANT USAGE, CREATE ON SCHEMA drizzle TO app_user;`);
+      await pool.query("CREATE SCHEMA IF NOT EXISTS drizzle;");
+      await pool.query("GRANT USAGE, CREATE ON SCHEMA drizzle TO app_user;");
       await pool.query(
-        `GRANT SELECT ON ALL TABLES IN SCHEMA drizzle TO app_user;`
+        "GRANT SELECT ON ALL TABLES IN SCHEMA drizzle TO app_user;"
       );
     } catch (_e) {
       // Ignore if already granted
@@ -91,16 +91,18 @@ export async function migrateTenantDatabase(dbName: string) {
   const db = drizzle(pool);
   await migrate(db, { migrationsFolder: "migrations/tenant" });
   try {
-    await pool.query(`GRANT USAGE, CREATE ON SCHEMA public TO app_user;`);
+    await pool.query("GRANT USAGE, CREATE ON SCHEMA public TO app_user;");
     await pool.query(
-      `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;`
+      "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;"
     );
     await pool.query(
-      `GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO app_user;`
+      "GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO app_user;"
     );
-    await pool.query(`CREATE SCHEMA IF NOT EXISTS drizzle;`);
-    await pool.query(`GRANT USAGE, CREATE ON SCHEMA drizzle TO app_user;`);
-    await pool.query(`GRANT SELECT ON ALL TABLES IN SCHEMA drizzle TO app_user;`);
+    await pool.query("CREATE SCHEMA IF NOT EXISTS drizzle;");
+    await pool.query("GRANT USAGE, CREATE ON SCHEMA drizzle TO app_user;");
+    await pool.query(
+      "GRANT SELECT ON ALL TABLES IN SCHEMA drizzle TO app_user;"
+    );
   } finally {
     await pool.end();
   }

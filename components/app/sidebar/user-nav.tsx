@@ -2,19 +2,14 @@
 
 import { ChevronUp } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -22,10 +17,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 // import { LoaderIcon } from "./icons";
-import { useSession, signOut } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 
 export function UserNav({ user }: { user: any }) {
   const router = useRouter();
@@ -38,10 +31,10 @@ export function UserNav({ user }: { user: any }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {isPending ? (
-              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent bg-background data-[state=open]:text-sidebar-accent-foreground h-10 justify-between">
+              <SidebarMenuButton className="h-10 justify-between bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                 <div className="flex flex-row gap-2">
-                  <div className="size-6 bg-zinc-500/30 rounded-full animate-pulse" />
-                  <span className="bg-zinc-500/30 text-transparent rounded-md animate-pulse">
+                  <div className="size-6 animate-pulse rounded-full bg-zinc-500/30" />
+                  <span className="animate-pulse rounded-md bg-zinc-500/30 text-transparent">
                     loading auth status
                   </span>
                 </div>
@@ -51,20 +44,20 @@ export function UserNav({ user }: { user: any }) {
               </SidebarMenuButton>
             ) : (
               <SidebarMenuButton
+                className="h-10 bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 data-testid="user-nav-button"
-                className="data-[state=open]:bg-sidebar-accent bg-background data-[state=open]:text-sidebar-accent-foreground h-10"
               >
                 <Image
+                  alt={user?.email ?? "Аватар пользователя"}
+                  className="rounded-full"
+                  height={24}
                   src={`${
                     process.env.NEXT_PUBLIC_AVATAR_SERVICE_URL ||
                     "https://avatar.vercel.sh"
                   }/${user?.email || "guest"}`}
-                  alt={user?.email ?? "Аватар пользователя"}
                   width={24}
-                  height={24}
-                  className="rounded-full"
                 />
-                <span data-testid="user-email" className="truncate">
+                <span className="truncate" data-testid="user-email">
                   {user?.email}
                 </span>
                 <ChevronUp className="ml-auto" />
@@ -72,13 +65,13 @@ export function UserNav({ user }: { user: any }) {
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent
+            className="w-[--radix-popper-anchor-width]"
             data-testid="user-nav-menu"
             side="top"
-            className="w-[--radix-popper-anchor-width]"
           >
             <DropdownMenuItem
-              data-testid="user-nav-item-theme"
               className="cursor-pointer"
+              data-testid="user-nav-item-theme"
               onSelect={() =>
                 setTheme(resolvedTheme === "dark" ? "light" : "dark")
               }
@@ -90,8 +83,7 @@ export function UserNav({ user }: { user: any }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild data-testid="user-nav-item-auth">
               <button
-                type="button"
-                className="w-full cursor-pointer "
+                className="w-full cursor-pointer"
                 onClick={async () => {
                   if (isPending) {
                     toast({
@@ -110,6 +102,7 @@ export function UserNav({ user }: { user: any }) {
                     },
                   });
                 }}
+                type="button"
               >
                 Выйти
               </button>

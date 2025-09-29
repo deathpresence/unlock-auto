@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 
 import { Chat } from "@/components/chat";
 import { getChatById, getMessagesByChatId } from "@/db/tenant/queries";
-import { convertToUIMessages } from "@/lib/utils";
 import { requireActiveOrgSession } from "@/lib/session";
+import { convertToUIMessages } from "@/lib/utils";
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;

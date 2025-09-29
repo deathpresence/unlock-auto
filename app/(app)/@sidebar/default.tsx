@@ -5,15 +5,17 @@ import {
   Building2,
   Car,
   Frame,
-  Map,
   PieChart,
   Settings2,
 } from "lucide-react";
-
-import { NavMain } from "@/components/app/sidebar/sidebar-nav-item";
-import { Sidebar, SidebarGroup, SidebarMenu } from "@/components/ui/sidebar";
-import { ComponentProps, useMemo } from "react";
+import { type ComponentProps, useMemo } from "react";
 import { useActiveOrg } from "@/components/app/active-org-provider";
+import { NavMain } from "@/components/app/sidebar/sidebar-nav-item";
+import {
+  type Sidebar,
+  SidebarGroup,
+  SidebarMenu,
+} from "@/components/ui/sidebar";
 
 const data = {
   navMain: [
@@ -102,11 +104,6 @@ const data = {
       url: "#",
       icon: PieChart,
     },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
   ],
 };
 
@@ -115,28 +112,30 @@ export default function DashboardSidebar({
 }: ComponentProps<typeof Sidebar>) {
   const hasActiveOrg = useActiveOrg();
 
-  const navItems = useMemo(() => {
-    return data.navMain
-      .filter((item) => {
-        if (item.title === "Автосалоны" && !hasActiveOrg) return false;
-        return true;
-      })
-      .map((item) => {
-        if (item.title === "Организация") {
-          const items = item.items?.filter((subItem) => {
-            if (!hasActiveOrg && subItem.title === "Карточка организации") {
-              return false;
-            }
-            if (hasActiveOrg && subItem.title === "Новая организация") {
-              return false;
-            }
-            return true;
-          });
-          return { ...item, items };
-        }
-        return item;
-      });
-  }, [hasActiveOrg]);
+  const navItems = useMemo(
+    () =>
+      data.navMain
+        .filter((item) => {
+          if (item.title === "Автосалоны" && !hasActiveOrg) return false;
+          return true;
+        })
+        .map((item) => {
+          if (item.title === "Организация") {
+            const items = item.items?.filter((subItem) => {
+              if (!hasActiveOrg && subItem.title === "Карточка организации") {
+                return false;
+              }
+              if (hasActiveOrg && subItem.title === "Новая организация") {
+                return false;
+              }
+              return true;
+            });
+            return { ...item, items };
+          }
+          return item;
+        }),
+    [hasActiveOrg]
+  );
   return (
     <SidebarGroup>
       <SidebarMenu>

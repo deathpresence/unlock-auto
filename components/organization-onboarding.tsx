@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
+  acceptInvitation,
   createOrganization,
   setActiveOrganization,
-  acceptInvitation,
 } from "@/lib/auth-client";
 
 export function OrganizationOnboarding() {
@@ -41,7 +41,9 @@ export function OrganizationOnboarding() {
       const { data, error } = await acceptInvitation({
         invitationId: inviteId,
       });
-      if (error) throw new Error(error.message || "Accept failed");
+      if (error) {
+        throw new Error(error.message || "Accept failed");
+      }
       const orgId =
         (data as any)?.invitation?.organizationId ||
         (data as any)?.member?.organizationId;
@@ -57,7 +59,7 @@ export function OrganizationOnboarding() {
   }
 
   return (
-    <div className="max-w-xl mx-auto p-6 w-full">
+    <div className="mx-auto w-full max-w-xl p-6">
       <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
@@ -66,16 +68,19 @@ export function OrganizationOnboarding() {
           <CardContent className="flex flex-col gap-4">
             {error ? <div className="text-red-500 text-sm">{error}</div> : null}
             <Input
+              onChange={(e) => setName(e.target.value)}
               placeholder="Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
             />
             <Input
+              onChange={(e) => setSlug(e.target.value)}
               placeholder="Slug"
               value={slug}
-              onChange={(e) => setSlug(e.target.value)}
             />
-            <Button onClick={handleCreate} disabled={!name || !slug || loading}>
+            <Button
+              disabled={!(name && slug) || loading}
+              onClick={handleCreate}
+            >
               Создать
             </Button>
           </CardContent>
@@ -87,13 +92,13 @@ export function OrganizationOnboarding() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <Input
+              onChange={(e) => setInviteId(e.target.value)}
               placeholder="Invitation ID"
               value={inviteId}
-              onChange={(e) => setInviteId(e.target.value)}
             />
             <Button
-              onClick={handleAcceptInvite}
               disabled={!inviteId || loading}
+              onClick={handleAcceptInvite}
             >
               Принять приглашение
             </Button>

@@ -1,19 +1,19 @@
+import { randomUUID } from "node:crypto";
+import { openai } from "@ai-sdk/openai";
 import {
-  streamText,
-  UIMessage,
   convertToModelMessages,
   createUIMessageStream,
   JsonToSseTransformStream,
+  streamText,
+  type UIMessage,
 } from "ai";
-import { randomUUID } from "crypto";
-import { openai } from "@ai-sdk/openai";
 import {
+  createStreamId,
   deleteChatById,
   getChatById,
+  getMessagesByChatId,
   saveChat,
   saveMessages,
-  getMessagesByChatId,
-  createStreamId,
   updateChatLastContextById,
 } from "@/db/tenant/queries";
 import { requireActiveOrgSession } from "@/lib/session";
@@ -44,9 +44,9 @@ export async function POST(req: Request) {
       const existing = await getChatById({ id: chatIdToUse });
       if (!existing) {
         const titlePart = Array.isArray(message?.parts)
-          ? message.parts.find((p: any) => p?.type === "text")?.text ??
-            "New chat"
-          : message?.content ?? "New chat";
+          ? (message.parts.find((p: any) => p?.type === "text")?.text ??
+            "New chat")
+          : (message?.content ?? "New chat");
         const title = String(titlePart).slice(0, 80) || "New chat";
         await saveChat({
           id: chatIdToUse,
@@ -57,8 +57,9 @@ export async function POST(req: Request) {
       }
     } catch (_e) {
       const titlePart = Array.isArray(message?.parts)
-        ? message.parts.find((p: any) => p?.type === "text")?.text ?? "New chat"
-        : message?.content ?? "New chat";
+        ? (message.parts.find((p: any) => p?.type === "text")?.text ??
+          "New chat")
+        : (message?.content ?? "New chat");
       const title = String(titlePart).slice(0, 80) || "New chat";
       await saveChat({
         id: chatIdToUse,
@@ -89,7 +90,7 @@ export async function POST(req: Request) {
   // Load prior messages for full context
   const existingMessages = await getMessagesByChatId({ id: chatIdToUse });
   const uiMessages: UIMessage[] = [
-    ...convertToModelMessages([]) && [], // no-op to keep types happy
+    ...(convertToModelMessages([]) && []), // no-op to keep types happy
   ];
   // Convert DB messages to UIMessage format the model expects
   for (const m of existingMessages) {
@@ -149,12 +150,13 @@ export async function POST(req: Request) {
         await saveMessages({ messages: toPersist as any });
       }
       if (finalUsage) {
-        await updateChatLastContextById({ chatId: chatIdToUse, context: finalUsage });
+        await updateChatLastContextById({
+          chatId: chatIdToUse,
+          context: finalUsage,
+        });
       }
     },
-    onError: () => {
-      return "Oops, an error occurred!";
-    },
+    onError: () => "Oops, an error occurred!",
   });
 
   return new Response(stream.pipeThrough(new JsonToSseTransformStream()));

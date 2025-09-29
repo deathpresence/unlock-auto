@@ -1,7 +1,6 @@
-import { getTenantDb } from "./pg-runtime";
-
-import { ensureMappingExists } from "./registry";
 import * as tenantSchema from "@/db/tenant/schema";
+import { getTenantDb } from "./pg-runtime";
+import { ensureMappingExists } from "./registry";
 
 /**
  * Get a tenant database connection with schema for an organization

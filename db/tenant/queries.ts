@@ -13,12 +13,10 @@ import {
   type SQL,
 } from "drizzle-orm";
 import { ChatSDKError } from "@/lib/errors";
-import type { AppUsage } from "@/lib/usage";
-import type { Suggestion } from "./schema/chat";
-import type { DBMessage } from "./schema/chat";
-import type { Chat } from "./schema/chat";
-import { getCurrentTenantDb } from "@/lib/tenant/utils";
 import { getSessionOrNull } from "@/lib/session";
+import { getCurrentTenantDb } from "@/lib/tenant/utils";
+import type { AppUsage } from "@/lib/usage";
+import type { Chat, DBMessage, Suggestion } from "./schema/chat";
 
 async function getCtx() {
   const data = await getSessionOrNull();

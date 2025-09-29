@@ -1,7 +1,7 @@
 "server only";
 
-import { Pool } from "pg";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 const cache = new Map<string, { pool: Pool; db: NodePgDatabase }>();
 

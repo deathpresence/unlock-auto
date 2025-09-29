@@ -1,9 +1,9 @@
-'server only';
+"server only";
 
-import { dbGlobal } from "@/lib/postgres";
 import { eq } from "drizzle-orm";
 import { organization as organizationTable } from "@/db/global/schema/auth";
 import { orgDbMapping } from "@/db/global/schema/meta";
+import { dbGlobal } from "@/lib/postgres";
 import { createTenantDatabase } from "./pg-admin";
 
 export async function setOrgDb(orgId: string, dbName: string) {
@@ -19,7 +19,9 @@ export async function getOrgDb(orgId: string) {
     .from(orgDbMapping)
     .where(eq(orgDbMapping.orgId, orgId))
     .limit(1);
-  if (!row) throw new Error("Tenant DB mapping not found");
+  if (!row) {
+    throw new Error("Tenant DB mapping not found");
+  }
   return row.dbName;
 }
 

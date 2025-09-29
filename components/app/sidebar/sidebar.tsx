@@ -1,6 +1,7 @@
-import * as React from "react";
+import type { User } from "better-auth";
 import Image from "next/image";
-
+import type { ComponentProps, ReactNode } from "react";
+import { OrganizationSwitcher } from "@/components/app/sidebar/organization-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -8,8 +9,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { OrganizationSwitcher } from "@/components/app/sidebar/organization-switcher";
-import { User } from "better-auth";
 import { UserNav } from "./user-nav";
 
 const branches = [
@@ -18,7 +17,7 @@ const branches = [
   { id: "varshavskoe-shosse", name: "LADA Минская" },
   { id: "lxiang-moskovskaya", name: "Lixiang Московская" },
   { id: "omoda-orenburgskiy-trakt", name: "OMODA Оренбургский тракт" },
-]
+];
 
 export function AppSidebar({
   sidebar,
@@ -26,7 +25,7 @@ export function AppSidebar({
   organization,
   organizations,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { sidebar: React.ReactNode } & {
+}: ComponentProps<typeof Sidebar> & { sidebar: ReactNode } & {
   user?: User;
   organization?: any;
   organizations?: any[];
@@ -34,22 +33,20 @@ export function AppSidebar({
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <div className="flex items-center w-full p-2">
+        <div className="flex w-full items-center p-2">
           <div>
-            <Image src="/logo.svg" width={80} height={32} alt="Unlock" />{" "}
-            <div className="text-lg font-semibold">ИИ Ассистент</div>
+            <Image alt="Unlock" height={32} src="/logo.svg" width={80} />{" "}
+            <div className="font-semibold text-lg">ИИ Ассистент</div>
           </div>
         </div>
         <OrganizationSwitcher
-          organizations={organizations || []}
-          defaultOrganization={organization}
           branches={branches}
           defaultBranch={{ id: "dmitrovskoe-shosse", name: "LADA Мусина" }}
+          defaultOrganization={organization}
+          organizations={organizations || []}
         />
       </SidebarHeader>
-      <SidebarContent>
-        {sidebar}
-      </SidebarContent>
+      <SidebarContent>{sidebar}</SidebarContent>
       <SidebarRail />
       <SidebarFooter>{user && <UserNav user={user} />}</SidebarFooter>
     </Sidebar>

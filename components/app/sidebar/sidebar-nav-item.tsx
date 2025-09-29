@@ -31,10 +31,10 @@ export function NavMain({
 }) {
   return (
     <Collapsible
-      key={item.title}
       asChild
-      defaultOpen={item.isActive}
       className="group/collapsible"
+      defaultOpen={item.isActive}
+      key={item.title}
     >
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app/sidebar/sidebar";
-import { AppHeader } from "@/components/app/header";
-import { requireSession } from "@/lib/session";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 import { ActiveOrgProvider } from "@/components/app/active-org-provider";
+import { AppHeader } from "@/components/app/header";
+import { AppSidebar } from "@/components/app/sidebar/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { auth } from "@/lib/auth";
+import { requireSession } from "@/lib/session";
 
 export const runtime = "nodejs";
 
@@ -32,7 +32,7 @@ export default async function AppLayout({
     });
     organizations = Array.isArray(orgsResponse)
       ? orgsResponse
-      : orgsResponse?.data ?? [];
+      : (orgsResponse?.data ?? []);
     if (session.activeOrganizationId) {
       activeOrg =
         organizations.find((o: any) => o.id === session.activeOrganizationId) ??
@@ -43,21 +43,19 @@ export default async function AppLayout({
   }
 
   return (
-    <>
-      <SidebarProvider>
-        <ActiveOrgProvider value={Boolean(session.activeOrganizationId)}>
-          <AppSidebar
-            sidebar={sidebar}
-            user={user}
-            organization={activeOrg || null}
-            organizations={organizations}
-          />
-          <SidebarInset>
-            <AppHeader />
-            {children}
-          </SidebarInset>
-        </ActiveOrgProvider>
-      </SidebarProvider>
-    </>
+    <SidebarProvider>
+      <ActiveOrgProvider value={Boolean(session.activeOrganizationId)}>
+        <AppSidebar
+          organization={activeOrg || null}
+          organizations={organizations}
+          sidebar={sidebar}
+          user={user}
+        />
+        <SidebarInset>
+          <AppHeader />
+          {children}
+        </SidebarInset>
+      </ActiveOrgProvider>
+    </SidebarProvider>
   );
 }

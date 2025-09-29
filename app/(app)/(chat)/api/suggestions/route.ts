@@ -1,6 +1,5 @@
-import { headers } from "next/headers";
-import { ChatSDKError } from "@/lib/errors";
 import { getSuggestionsByDocumentId } from "@/db/tenant/queries";
+import { ChatSDKError } from "@/lib/errors";
 import { requireActiveOrgSession } from "@/lib/session";
 
 export async function GET(request: Request) {
@@ -30,5 +29,3 @@ export async function GET(request: Request) {
 
   return Response.json(suggestions, { status: 200 });
 }
-
-

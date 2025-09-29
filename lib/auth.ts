@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
-import { admin, organization } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { dbGlobal } from "@/lib/postgres";
+import { admin, organization } from "better-auth/plugins";
 import * as schema from "@/db/global/schema/index";
+import { dbGlobal } from "@/lib/postgres";
 import { ensureTenantDb } from "@/lib/tenant/registry";
 
 export const auth = betterAuth({
