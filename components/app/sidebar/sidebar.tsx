@@ -12,9 +12,13 @@ import { OrganizationSwitcher } from "@/components/app/sidebar/organization-swit
 import { User } from "better-auth";
 import { UserNav } from "./user-nav";
 
-const data = {
-  versions: ["Дмитровское шоссе", "МКАД 44 км", "Варшавское шоссе"],
-};
+const branches = [
+  { id: "dmitrovskoe-shosse", name: "LADA Мусина" },
+  { id: "mkad-44-km", name: "LADA Восстания" },
+  { id: "varshavskoe-shosse", name: "LADA Минская" },
+  { id: "lxiang-moskovskaya", name: "Lixiang Московская" },
+  { id: "omoda-orenburgskiy-trakt", name: "OMODA Оренбургский тракт" },
+]
 
 export function AppSidebar({
   sidebar,
@@ -36,7 +40,12 @@ export function AppSidebar({
             <div className="text-lg font-semibold">ИИ Ассистент</div>
           </div>
         </div>
-        <OrganizationSwitcher organizations={organizations || []} defaultOrganization={organization} />
+        <OrganizationSwitcher
+          organizations={organizations || []}
+          defaultOrganization={organization}
+          branches={branches}
+          defaultBranch={{ id: "dmitrovskoe-shosse", name: "LADA Мусина" }}
+        />
       </SidebarHeader>
       <SidebarContent>
         {sidebar}
