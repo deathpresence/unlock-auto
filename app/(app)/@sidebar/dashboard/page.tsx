@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  BookOpen,
-  Building2,
-  Car,
-  Frame,
-  PieChart,
-  Settings2,
-} from "lucide-react";
+import { Building2, Car, Store } from "lucide-react";
 import { type ComponentProps, useMemo } from "react";
 import { useActiveOrg } from "@/components/app/active-org-provider";
 import { NavMain } from "@/components/app/sidebar/sidebar-nav-item";
@@ -40,69 +33,38 @@ const data = {
       ],
     },
     {
-      title: "Автосалоны",
+      title: "Дилерские центры",
+      url: "#",
+      icon: Store,
+      items: [
+        {
+          title: "Добавить",
+          url: "/branches/new",
+        },
+        {
+          title: "Список",
+          url: "/branches",
+        },
+      ],
+    },
+    {
+      title: "Авто",
       url: "#",
       icon: Car,
       items: [
         {
-          title: "Добавить автосалон",
-          url: "#",
+          title: "Авто в наличии",
+          url: "/auto/in-stock",
         },
         {
-          title: "Список автосалонов",
-          url: "#",
+          title: "Марки и модели",
+          url: "/auto/models",
+        },
+        {
+          title: "Комплектации",
+          url: "/auto/trims",
         },
       ],
-    },
-    {
-      title: "Настройки",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Документация",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
     },
   ],
 };
