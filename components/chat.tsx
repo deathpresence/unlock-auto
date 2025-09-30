@@ -5,7 +5,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { CopyIcon, GlobeIcon, RefreshCcwIcon } from "lucide-react";
 import { Fragment, useState } from "react";
 import { unstable_serialize, useSWRConfig } from "swr";
-import { getChatHistoryPaginationKey } from "@/app/(app)/@sidebar/(chat)/chat/page";
+import { getChatHistoryPaginationKey } from "@/app/(app)/@sidebar/chat/page";
 import { Action, Actions } from "@/components/ai/actions";
 import {
   Conversation,

@@ -6,7 +6,7 @@ import { unstable_serialize } from "swr/infinite";
 import {
   type ChatHistory,
   getChatHistoryPaginationKey,
-} from "@/app/(app)/@sidebar/(chat)/chat/page";
+} from "@/app/(app)/@sidebar/chat/page";
 import { updateChatVisibility } from "@/app/(app)/(chat)/chat/actions";
 // import type { VisibilityType } from '@/components/visibility-selector';
 
