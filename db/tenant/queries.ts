@@ -100,7 +100,7 @@ export async function getChatsByUserId({
     const { db, schema } = await getCtx();
     const extendedLimit = limit + 1;
 
-    const query = (whereCondition?: SQL<any>) =>
+    const query = (whereCondition?: SQL<unknown>) =>
       db
         .select()
         .from(schema.chat)
@@ -112,7 +112,7 @@ export async function getChatsByUserId({
         .orderBy(desc(schema.chat.createdAt))
         .limit(extendedLimit);
 
-    let filteredChats: Array<Chat> = [];
+    let filteredChats: Chat[] = [];
 
     if (startingAfter) {
       const [selectedChat] = await db
@@ -183,11 +183,7 @@ export async function getChatById({ id }: { id: string }) {
   }
 }
 
-export async function saveMessages({
-  messages,
-}: {
-  messages: Array<DBMessage>;
-}) {
+export async function saveMessages({ messages }: { messages: DBMessage[] }) {
   try {
     const { db, schema } = await getCtx();
     return await db.insert(schema.message).values(messages);
@@ -369,7 +365,7 @@ export async function deleteDocumentsByIdAfterTimestamp({
 export async function saveSuggestions({
   suggestions,
 }: {
-  suggestions: Array<Suggestion>;
+  suggestions: Suggestion[];
 }) {
   try {
     const { db, schema } = await getCtx();
