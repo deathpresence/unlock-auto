@@ -12,6 +12,7 @@ import {
   lt,
   type SQL,
 } from "drizzle-orm";
+import { cache } from "react";
 import { ChatSDKError } from "@/lib/errors";
 import { getSessionOrNull } from "@/lib/session";
 import { getCurrentTenantDb } from "@/lib/tenant/utils";
@@ -32,8 +33,111 @@ async function getCtx() {
       "No active organization selected"
     );
   }
-  const { db, schema } = await getCurrentTenantDb(session);
-  return { db, schema, session };
+  const { db, schema, dbName } = await getCurrentTenantDb(session);
+  return { db, schema, session, dbName };
+}
+
+export const listBranches = cache(async () => {
+  const { db, schema } = await getCtx();
+  try {
+    return await db
+      .select()
+      .from(schema.branch)
+      .orderBy(desc(schema.branch.createdAt));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new ChatSDKError(
+      "bad_request:database",
+      `Failed to list branches: ${message}`
+    );
+  }
+});
+
+export const getBranchById = cache(async (id: string) => {
+  try {
+    const { db, schema } = await getCtx();
+    const [row] = await db
+      .select()
+      .from(schema.branch)
+      .where(eq(schema.branch.id, id));
+    return row ?? null;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new ChatSDKError(
+      "bad_request:database",
+      `Failed to get branch: ${message}`
+    );
+  }
+});
+
+export async function createBranch(input: {
+  name: string;
+  slug?: string | null;
+  address?: string | null;
+}) {
+  try {
+    const { db, schema } = await getCtx();
+    const [row] = await db
+      .insert(schema.branch)
+      .values({
+        name: input.name,
+        slug: input.slug ?? null,
+        address: input.address ?? null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return row;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new ChatSDKError(
+      "bad_request:database",
+      `Failed to create branch: ${message}`
+    );
+  }
+}
+
+export async function updateBranch(
+  id: string,
+  input: { name?: string; slug?: string | null; address?: string | null }
+) {
+  try {
+    const { db, schema } = await getCtx();
+    const [row] = await db
+      .update(schema.branch)
+      .set({
+        name: input.name,
+        slug: input.slug,
+        address: input.address,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.branch.id, id))
+      .returning();
+    return row;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new ChatSDKError(
+      "bad_request:database",
+      `Failed to update branch: ${message}`
+    );
+  }
+}
+
+export async function deleteBranch(id: string) {
+  try {
+    const { db, schema } = await getCtx();
+    const [row] = await db
+      .delete(schema.branch)
+      .where(eq(schema.branch.id, id))
+      .returning();
+    return row;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new ChatSDKError(
+      "bad_request:database",
+      `Failed to delete branch: ${message}`
+    );
+  }
 }
 
 export async function saveChat({

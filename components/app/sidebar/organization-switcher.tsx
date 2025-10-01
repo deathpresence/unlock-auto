@@ -1,12 +1,14 @@
 "use client";
 
-import { ChevronsUpDown, PlusCircle } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { setActiveBranch } from "@/app/(app)/(dashboard)/dashboard/branches/branch-actions";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -14,34 +16,52 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import type { Organization } from "@/db/global/schema";
+import type { Branch } from "@/db/tenant/schema";
 
 export function OrganizationSwitcher({
-  organizations,
   defaultOrganization,
+  branches,
+  defaultBranch,
 }: {
-  organizations: { id: string; name?: string }[];
-  defaultOrganization: { id: string; name?: string } | null;
+  defaultOrganization: Organization | null;
+  branches: Branch[];
+  defaultBranch: Branch | null;
 }) {
   const router = useRouter();
-  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(
-    defaultOrganization?.id ?? null
+  const [, startTransition] = useTransition();
+  const [selectedBranchId, setSelectedBranchId] = useState<string | null>(
+    defaultBranch?.id ?? null
   );
-  const [orgs, setOrgs] = useState<{ id: string; name?: string }[]>(
-    organizations || []
-  );
+  const [branchList, setBranchList] = useState<Branch[]>(branches || []);
 
   useEffect(() => {
-    setOrgs(organizations || []);
-  }, [organizations]);
+    setBranchList(branches || []);
+  }, [branches]);
 
   useEffect(() => {
-    setSelectedOrgId(defaultOrganization?.id ?? null);
-  }, [defaultOrganization?.id]);
+    setSelectedBranchId(defaultBranch?.id ?? null);
+  }, [defaultBranch?.id]);
+
+  const handleBranchSelect = (branchId: string) => {
+    setSelectedBranchId(branchId);
+
+    startTransition(async () => {
+      const result = await setActiveBranch(branchId);
+      if (result.error) {
+        setSelectedBranchId(defaultBranch?.id ?? null);
+      } else {
+        router.refresh();
+      }
+    });
+  };
+
+  const selectedBranch = branchList.find((b) => b.id === selectedBranchId);
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        {orgs.length > 0 ? (
+        {defaultOrganization ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
@@ -57,40 +77,46 @@ export function OrganizationSwitcher({
                   />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">
-                    {orgs.find((o) => o.id === selectedOrgId)?.name ??
-                      selectedOrgId ??
-                      "Выберите организацию"}
+                  <span className="text-muted-foreground text-xs">
+                    {defaultOrganization?.name ?? defaultOrganization?.id}
                   </span>
-                  <span className="">Организация</span>
+                  <span className="font-medium">
+                    {selectedBranch?.name ?? "Выберите филиал"}
+                  </span>
                 </div>
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="w-(--radix-dropdown-menu-trigger-width)"
+              className="w-[--radix-dropdown-menu-trigger-width]"
             >
-              {/* {orgs.map((org) => (
+              {branchList.length > 0 ? (
+                branchList.map((branch) => (
+                  <DropdownMenuItem
+                    key={branch.id}
+                    onSelect={() => handleBranchSelect(branch.id)}
+                  >
+                    {branch.name}
+                    {branch.id === selectedBranchId && (
+                      <Check className="ml-auto" />
+                    )}
+                  </DropdownMenuItem>
+                ))
+              ) : (
                 <DropdownMenuItem
-                  key={org.id}
-                  onSelect={async () => {
-                    setSelectedOrgId(org.id);
-                    await setActiveOrganization({ organizationId: org.id });
-                    // Navigate to chat so the Chat tab becomes selected
-                    router.replace("/chat");
-                  }}
+                  onSelect={() => router.push("/dashboard/branches/new")}
                 >
-                  {org.name ?? org.id}
-                  {org.id === selectedOrgId && <Check className="ml-auto" />}
+                  <PlusCircle className="mr-2 size-4" />
+                  Создать филиал
                 </DropdownMenuItem>
-              ))} */}
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
           <SidebarMenuButton
             className="cursor-pointer border"
-            onClick={() => router.push("/organizations/new")}
+            onClick={() => router.push("/dashboard/organizations/new")}
             size="lg"
           >
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
@@ -98,7 +124,7 @@ export function OrganizationSwitcher({
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
               <span className="font-medium">Создайте организацию</span>
-            </div>{" "}
+            </div>
           </SidebarMenuButton>
         )}
       </SidebarMenuItem>

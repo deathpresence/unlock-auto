@@ -1,6 +1,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
   boolean,
+  index,
   pgTable,
   text,
   timestamp,
@@ -25,23 +26,34 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
-export const session = pgTable("session", {
-  id: uuid().primaryKey().notNull().defaultRandom(),
-  expiresAt: timestamp("expires_at").notNull(),
-  token: text().notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  ipAddress: varchar("ip_address", { length: 45 }),
-  userAgent: text("user_agent"),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  impersonatedBy: text("impersonated_by"),
-  activeOrganizationId: text("active_organization_id"),
-});
+export const session = pgTable(
+  "session",
+  {
+    id: uuid().primaryKey().notNull().defaultRandom(),
+    expiresAt: timestamp("expires_at").notNull(),
+    token: text().notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    ipAddress: varchar("ip_address", { length: 45 }),
+    userAgent: text("user_agent"),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    impersonatedBy: text("impersonated_by"),
+    activeOrganizationId: text("active_organization_id"),
+    activeBranchId: text("active_branch_id"),
+  },
+  (table) => [
+    {
+      activeBranchIdIdx: index("session_active_branch_id_idx").on(
+        table.activeBranchId
+      ),
+    },
+  ]
+);
 
 export const account = pgTable("account", {
   id: uuid().primaryKey().notNull().defaultRandom(),

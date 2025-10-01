@@ -9,26 +9,21 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import type { Branch } from "@/db/tenant/schema";
 import { UserNav } from "./user-nav";
-
-const branches = [
-  { id: "dmitrovskoe-shosse", name: "LADA Мусина" },
-  { id: "mkad-44-km", name: "LADA Восстания" },
-  { id: "varshavskoe-shosse", name: "LADA Минская" },
-  { id: "lxiang-moskovskaya", name: "Lixiang Московская" },
-  { id: "omoda-orenburgskiy-trakt", name: "OMODA Оренбургский тракт" },
-];
 
 export function AppSidebar({
   sidebar,
   user,
   organization,
-  organizations,
+  branches,
+  defaultBranch,
   ...props
 }: ComponentProps<typeof Sidebar> & { sidebar: ReactNode } & {
   user?: User;
-  organization?: any;
-  organizations?: any[];
+  organization?: { id: string; name?: string } | null;
+  branches: Branch[];
+  defaultBranch: Branch | null;
 }) {
   return (
     <Sidebar {...props}>
@@ -41,9 +36,8 @@ export function AppSidebar({
         </div>
         <OrganizationSwitcher
           branches={branches}
-          defaultBranch={{ id: "dmitrovskoe-shosse", name: "LADA Мусина" }}
-          defaultOrganization={organization}
-          organizations={organizations || []}
+          defaultBranch={defaultBranch}
+          defaultOrganization={organization ?? null}
         />
       </SidebarHeader>
       <SidebarContent>{sidebar}</SidebarContent>

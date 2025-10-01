@@ -39,11 +39,11 @@ const data = {
       items: [
         {
           title: "Добавить",
-          url: "/branches/new",
+          url: "/dashboard/branches/new",
         },
         {
           title: "Список",
-          url: "/branches",
+          url: "/dashboard/branches",
         },
       ],
     },
